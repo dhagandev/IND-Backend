@@ -11,7 +11,8 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-var allowedOrigins = ['http://localhost:3000',
+var allowedOrigins = ['https://redtale.herokuapp.com',
+            'http://localhost:3000',
 					  'https://accounts.google.com/*'];
 app.use(cors({
   origin: function(origin, callback){
