@@ -1,13 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var db = require('../lib/firebaseClient');
 
-const admin = require('firebase-admin');
-
-admin.initializeApp({
-	credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-});
-
-let db = admin.firestore();
+let usersRef = db.collection('UserProfile');
 
 /* GET users listing. */
 router.get('/test', function(req, res, next) {
@@ -15,7 +10,6 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/test/getAllUsers', function(req, res, next) {
-	let usersRef = db.collection('UserProfile')
 	let usersResult = {}
 	let allUsers = usersRef.get()
 		.then(snapshot => {
@@ -28,19 +22,29 @@ router.get('/test/getAllUsers', function(req, res, next) {
 		})
 })
 
-router.post('/test/postNewUser', function(req, res, next) {
-	let usersRef = db.collection('UserProfile')
-	let postExample = {
-		email: "2-testemail@gmail.com",
-		emailVerified: false,
-		name: "2-profile-test-name",
-		role: "writer"
-	}
-	console.log(req.body)
-	let reqPost = {}
-	//Add will autogen id
-	//Data will come from req.body
-	// usersRef.add(postExample);
+router.post('/addUser', function(req, res, next){
+	let currUser = req.body.userInfo
+	let userProfile = {
+      'uid': currUser.uid,
+      'displayName': currUser.displayName,
+      'email': currUser.email,
+      'photoURL': currUser.photoURL,
+      'emailVerified': currUser.emailVerified,
+      'payment-ref': null,
+      'projects': []
+    }
+
+    usersRef.doc(currUser.uid).get()
+    	.then((docSnapshot) => {
+    		if (docSnapshot.exists) {
+    			res.send({"profile": docSnapshot.data()})
+    		} else {
+    			usersRef.doc(currUser.uid).set(userProfile);
+				res.send({"profile": userProfile})
+    		}
+    	})
+
+    
 })
 
 module.exports = router;

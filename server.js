@@ -4,14 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-require('dotenv').config()
+require('dotenv').config();
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var projectsRouter = require('./routes/projects');
+var chaptersRouter = require('./routes/chapters');
 
 var app = express();
 
-var allowedOrigins = ['https://redtale.herokuapp.com',
+var allowedOrigins = ['https://redtalenarratives.herokuapp.com',
             'http://localhost:3000',
 					  'https://accounts.google.com/*'];
 app.use(cors({
@@ -40,6 +42,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/projects', projectsRouter);
+app.use('/api/chapters', chaptersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
