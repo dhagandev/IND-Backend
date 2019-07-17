@@ -13,7 +13,7 @@ var chaptersRouter = require('./routes/chapters');
 
 var app = express();
 
-var allowedOrigins = ['https://redtalenarratives.herokuapp.com',
+var allowedOrigins = ['http://redtalenarratives.herokuapp.com/',
             'http://localhost:3000',
 					  'https://accounts.google.com/*'];
 app.use(cors({
