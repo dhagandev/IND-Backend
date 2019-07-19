@@ -53,33 +53,46 @@ router.get('/getProject/:id', function(req, res, next) {
 router.delete('/deleteProject/:id', function(req, res, next) {
 	console.log("Function called to delete")
 	let id = req.params.id
+	let user = req.query.u
 	let deletedDoc = projectsRef.doc(id).get()
 						.then(ref => {
 							return ref.data()
 						})
 	projectsRef.doc(id).delete()
-	extensiveProjectDelete(deletedDoc)
+	extensiveProjectDelete(deletedDoc, id, user)
 	res.send({'deleted': deletedDoc})
 })
 
-function extensiveProjectDelete(deletedDoc) {
+function extensiveProjectDelete(deletedDoc, id, user) {
 	let deleteChapters = deletedDoc
-	deleteChapters.forEach(chapter => {
-		let chapterDoc = db.collection('Chapters').doc(chapter).get()
-							.then(ref => {
-								return ref.data()
-							})
-		let deleteScenes = chapterDoc.scenes
-		deleteScenes.forEach(scene => {
-			let sceneDoc = db.collection('Scenes').doc(scene).get()
-							.then(ref => {
-								return ref.data()
-							})
+	// deleteChapters.forEach(chapter => {
+	// 	let chapterDoc = db.collection('Chapters').doc(chapter).get()
+	// 						.then(ref => {
+	// 							return ref.data()
+	// 						})
+	// 	let deleteScenes = chapterDoc.scenes
+	// 	deleteScenes.forEach(scene => {
+	// 		let sceneDoc = db.collection('Scenes').doc(scene).get()
+	// 						.then(ref => {
+	// 							return ref.data()
+	// 						})
 
-			db.collection('Scenes').doc(scene).delete()
+	// 		db.collection('Scenes').doc(scene).delete()
+	// 	})
+	// 	db.collection('Chapters').doc(chapter).delete()
+	// })
+	db.collection('UserProfile').doc(user).get()
+		.then(snapshot => {
+			let userInfo = snapshot.data()
+			let updateArr = userInfo.projects
+			let position = updateArr.indexOf(id)
+			if (index > -1) {
+				updateArr.splice(position, 1)
+			}
+			userInfo.update({
+				projects: updateArr
+			})
 		})
-		db.collection('Chapters').doc(chapter).delete()
-	})
 }
 
 module.exports = router;
